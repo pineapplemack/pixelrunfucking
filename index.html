@@ -7,6 +7,41 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <style>
+    #startBtn {
+      position: fixed; left: 50%; bottom: 16%;
+      transform: translateX(-50%);
+      z-index: 60;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 15px 40px;
+      border-radius: 999px;
+      border: 2px solid rgba(255, 226, 150, 0.95);
+      background: linear-gradient(180deg, #ffdd7a, #ef9f24);
+      color: #3a2300;
+      cursor: pointer;
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5), 0 0 0 4px rgba(255, 200, 80, 0.18);
+      font: 800 19px/1 system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      white-space: nowrap; max-width: 92vw;
+      -webkit-tap-highlight-color: transparent;
+      animation: startPulse 1.8s ease-in-out infinite;
+    }
+    #startBtn .sub {
+      font: 600 11px/1 system-ui, -apple-system, "PingFang SC", sans-serif;
+      opacity: 0.72; letter-spacing: 0.04em;
+    }
+    #startBtn:active { transform: translateX(-50%) scale(0.96); }
+    #startBtn.gone { display: none; }
+    @keyframes startPulse {
+      0%, 100% { box-shadow: 0 12px 34px rgba(0,0,0,0.5), 0 0 0 4px rgba(255,200,80,0.18); }
+      50%      { box-shadow: 0 12px 34px rgba(0,0,0,0.5), 0 0 0 10px rgba(255,200,80,0.05); }
+    }
+  </style>
+
+  <button id="startBtn">
+    <span>▶ 开始游戏</span>
+    <span class="sub">点一下就开跑 · 手机建议横屏</span>
+  </button>
+
   <div id="topbar">
     <button id="btnPlay" class="tb" title="开始 / 暂停（P）">▶</button>
     <button id="btnMute" class="tb" title="静音（M）">🔊</button>
@@ -88,5 +123,30 @@
   <script src="entities.js"></script>
   <script src="game.js"></script>
   <script src="dev.js"></script>
+  <script>
+    (function () {
+      const btn = document.getElementById('startBtn');
+      const touch = document.getElementById('touch');
+      const stage = document.getElementById('stage');
+
+      function startGame() {
+        window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter', bubbles: true }));
+        btn.classList.add('gone');
+      }
+      btn.addEventListener('click', startGame);
+      btn.addEventListener('touchstart', function (e) { e.preventDefault(); startGame(); }, { passive: false });
+      if (stage) stage.addEventListener('pointerdown', function () {
+        if (typeof Game !== 'undefined' && Game.state === 'title') startGame();
+      });
+
+      /* 同步：首页时藏起摇杆，进游戏后再出现 */
+      setInterval(function () {
+        if (typeof Game === 'undefined') return;
+        const onTitle = Game.state === 'title';
+        btn.classList.toggle('gone', !onTitle);
+        if (touch) touch.style.display = onTitle ? 'none' : '';
+      }, 250);
+    })();
+  </script>
 </body>
 </html>
