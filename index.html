@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pixel Fucking Run 1 (beta)</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="topbar">
+    <button id="btnPlay" class="tb" title="开始 / 暂停（P）">▶</button>
+    <button id="btnMute" class="tb" title="静音（M）">🔊</button>
+    <span class="stat">种子 <b id="seedLabel">—</b><button id="btnSeed" class="mini" title="复制种子">⧉</button></span>
+    <span class="stat">最高分 <b id="bestLabel">0</b></span>
+    <span class="spacer"></span>
+    <span class="brand">PIXEL FUCKING RUN 1 <i>beta</i></span>
+    <button id="btnJump" class="jumpbtn" title="跳到任意关卡（测试用）">▾ 跳关</button>
+    <button id="btnSet" class="tb" title="设置">⚙</button>
+    <button id="btnDev" class="tb" title="开发者控制台（`）">&gt;_</button>
+    <button id="btnFull" class="tb" title="全屏">⛶</button>
+  </div>
+
+  <div id="rotate">横屏玩更爽 ↻</div>
+
+  <div id="touch" class="hidden">
+    <div id="stick"><div id="knob"></div></div>
+    <div id="pads">
+      <button class="tpad" data-key="KeyJ">攻击</button>
+      <button class="tpad" data-key="Space">跳</button>
+      <button class="tpad" data-key="KeyL">冲刺</button>
+      <button class="tpad small" data-key="KeyZ">技能</button>
+      <button class="tpad small" data-key="Tab">背包</button>
+    </div>
+  </div>
+
+  <div id="stage">
+    <div id="frame">
+      <canvas id="game" width="1280" height="704"></canvas>
+      <canvas id="ui"></canvas>
+    </div>
+    <div id="dev" class="hidden">
+      <div id="devlog">开发者控制台 · 输入 help 查看指令</div>
+      <input id="devinput" type="text" autocomplete="off" spellcheck="false"
+             placeholder="例：lvl 5 / god / weapon all / coins 99">
+    </div>
+  </div>
+
+  <div id="jumpPanel" class="hidden"></div>
+
+  <div id="popover" class="hidden">
+    <div class="ttl">设置</div>
+    <label class="row"><span>音量</span><input id="vol" type="range" min="0" max="100" value="60"></label>
+    <button id="btnReset" class="wide">清除存档记录</button>
+    <button id="btnExport" class="wide">导出本关 JSON</button>
+    <button id="btnImport" class="wide">导入关卡 JSON</button>
+    <input id="fileImport" type="file" accept="application/json,.json" style="display:none">
+    <div class="keys">
+      ← → 移动　空格 跳（空中再按 = 二段跳）<br>
+      Shift 加速　↓ 蹲　↓+J 下砸<br>
+      1~9 换武器　J 用武器　L 冲刺　E 交互　T 跳过教程<br>
+      P 暂停　R 回存档点
+    </div>
+  </div>
+
+  <script>
+    window.__errors = [];
+    window.onerror = function (msg, src, line, col) {
+      window.__errors.push(msg + ' @' + (src || '?').split('/').pop() + ':' + line + ':' + col);
+      document.title = 'ERR ' + window.__errors.join(' | ');
+      var d = document.getElementById('errbox');
+      if (!d) {
+        d = document.createElement('div');
+        d.id = 'errbox';
+        d.style.cssText = 'position:fixed;left:0;bottom:0;right:0;background:#3a0d0d;color:#ffb3b3;font:12px monospace;padding:8px;z-index:99;white-space:pre-wrap';
+        document.body.appendChild(d);
+      }
+      d.textContent = window.__errors.join('\n');
+    };
+  </script>
+  <script src="js/core.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/sprites.js"></script>
+  <script src="js/weapons.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/gen.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/dev.js"></script>
+</body>
+</html>
