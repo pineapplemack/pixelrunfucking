@@ -245,7 +245,10 @@ const Game = {
       p.coins = old.coins;
       p.energy = old.energy;
       p.maxHp = old.maxHp;
-      if (!atCheckpoint && old.weapons) { p.weapons = old.weapons.slice(); p.wi = old.wi; }
+      /* 武器/背包跨关、跨复活都保留；丢失的已经在死亡处理里从 bagW 移除 */
+      if (old.weapons) { p.weapons = old.weapons.slice(); p.wi = Math.min(old.wi, p.weapons.length - 1); }
+      if (old.bagW) p.bagW = old.bagW.slice();
+      p.deaths = old.deaths || 0;
     }
     this.dmgScale = Math.min(2.2, 1 + index * 0.09);
     this.theme = b.theme || 'overworld';
@@ -482,15 +485,13 @@ const Game = {
         for (const id of p.bagW.slice()) {
           if (Math.random() < chance) lost.push(id);
         }
-        if (lost.length) {
-          p.bagW = p.bagW.filter((id) => lost.indexOf(id) < 0);
-          let tx = Math.floor((p.x + p.w / 2) / TILE);
-          tx = Math.max(1, Math.min(this.level.w - 2, tx));
-          let ty = p.y + p.h - 22;
-          if (ty > (GROUND_ROW - 1) * TILE) ty = (GROUND_ROW - 1) * TILE;
-          this.tombstone = new Tombstone(tx * TILE + 4, ty, lost);
-          this.float('背包丢了 ' + lost.length + ' 件', p.x, p.y - 20, '#ffb3b3');
-        }
+        p.bagW = p.bagW.filter((id) => lost.indexOf(id) < 0);
+        let tx = Math.floor((p.x + p.w / 2) / TILE);
+        tx = Math.max(1, Math.min(this.level.w - 2, tx));
+        let ty = p.y + p.h - 22;
+        if (ty > (GROUND_ROW - 1) * TILE) ty = (GROUND_ROW - 1) * TILE;
+        this.tombstone = new Tombstone(tx * TILE + 4, ty, lost);
+        if (lost.length) this.float('背包丢了 ' + lost.length + ' 件', p.x, p.y - 20, '#ffb3b3');
         if (p.score > this.best) { this.best = p.score; this.save(); }
         const bl = document.getElementById('bestLabel');
         if (bl) bl.textContent = this.best;

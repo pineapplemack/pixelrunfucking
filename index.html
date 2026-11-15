@@ -63,6 +63,7 @@
       <button class="tpad" data-key="KeyJ">攻击</button>
       <button class="tpad" data-key="Space">跳</button>
       <button class="tpad" data-key="KeyL">冲刺</button>
+      <button class="tpad act" data-key="KeyE">交互</button>
       <button class="tpad small" data-key="KeyZ">技能</button>
       <button class="tpad small" data-key="Tab">背包</button>
     </div>
@@ -91,8 +92,9 @@
     <input id="fileImport" type="file" accept="application/json,.json" style="display:none">
     <div class="keys">
       ← → 移动　空格 跳（空中再按 = 二段跳）<br>
-      Shift 加速　↓ 蹲　↓+J 下砸<br>
-      1~9 换武器　J 用武器　L 冲刺　E 交互　T 跳过教程<br>
+      Shift 加速　↓ 蹲<br>
+      J 用武器　1-5 换武器　L 冲刺　E 交互　Tab 背包<br>
+      Z X C V 技能　T 跳过教程<br>
       P 暂停　R 回存档点
     </div>
   </div>
@@ -138,6 +140,17 @@
       if (stage) stage.addEventListener('pointerdown', function () {
         if (typeof Game !== 'undefined' && Game.state === 'title') startGame();
       });
+
+      /* 手机没键盘：背包里用「交互」按钮当 Enter */
+      const actBtn = document.querySelector('#touch .act');
+      if (actBtn) {
+        actBtn.addEventListener('touchstart', function (e) {
+          e.preventDefault();
+          if (typeof Game !== 'undefined' && Game.bag) {
+            window.dispatchEvent(new KeyboardEvent('keydown', { code: 'Enter' }));
+          }
+        }, { passive: false });
+      }
 
       /* 同步：首页时藏起摇杆，进游戏后再出现 */
       setInterval(function () {
